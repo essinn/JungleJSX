@@ -1,156 +1,63 @@
-import { readFile, writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir } from "fs/promises";
 import { join, resolve } from "path";
-import { existsSync } from "fs";
-import readline from "readline";
-import https from "https";
-import prompts from "prompts";
 
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-function ask(question: string): Promise<string> {
-  return new Promise(resolve => {
-    rl.question(question, resolve);
-  });
-}
-
-async function getLatestVersion(packageName: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const url = `https://registry.npmjs.org/${packageName}/latest`;
-
-    const request = https
-      .get(url, res => {
-        let data = "";
-
-        res.on("data", chunk => {
-          data += chunk;
-        });
-
-        res.on("end", () => {
-          try {
-            const packageInfo = JSON.parse(data);
-            if (packageInfo.version) {
-              resolve(packageInfo.version);
-            } else {
-              reject(new Error("Version not found in package info"));
-            }
-          } catch (error) {
-            reject(error);
-          }
-        });
-      })
-      .on("error", error => {
-        reject(error);
-      });
-
-    request.setTimeout(5000, () => {
-      request.destroy();
-      reject(new Error("Request timeout"));
-    });
-  });
-}
-
-async function askLanguagePreference(): Promise<void> {
-  const response = await prompts({
-    type: "select",
-    name: "language",
-    message: "Choose your language:",
-    choices: [
-      { title: "TypeScript", value: "typescript" },
-      { title: "JavaScript", value: "javascript" },
-    ],
-    initial: 0,
-  });
-
-  if (response.language === "javascript") {
-    console.log("\n❌ Wrong answer. Use TypeScript.\n");
-  }
-}
-
-export async function createJungleApp(projectName?: string, template?: string) {
-  try {
-    if (!projectName) {
-      projectName = await ask("Project name: ");
-    }
-
-    if (!projectName) {
-      console.error("❌ Project name is required");
-      process.exit(1);
-    }
-
-    const projectPath = resolve(process.cwd(), projectName);
-
-    if (existsSync(projectPath)) {
-      const overwrite = await ask(
-        `Directory "${projectName}" already exists. Overwrite? (y/N): `
-      );
-      if (
-        overwrite.toLowerCase() !== "y" &&
-        overwrite.toLowerCase() !== "yes"
-      ) {
-        console.log("Aborted.");
-        process.exit(0);
-      }
-    }
-
-    await askLanguagePreference();
-
-    console.log(`\n🚀 Creating ReactServe app in ${projectPath}...\n`);
-
-    await mkdir(projectPath, { recursive: true });
-
-    console.log("📦 Fetching latest version of react-serve-js...");
-    let latestVersion: string;
-    try {
-      latestVersion = await getLatestVersion("react-serve-js");
-      console.log(`✅ Latest version: ${latestVersion}\n`);
-    } catch (error) {
-      console.warn(
-        "⚠️  Could not fetch latest version, using fallback version 0.6.0"
-      );
-      console.warn(
-        `    Error: ${error instanceof Error ? error.message : String(error)}`
-      );
-      latestVersion = "0.6.0";
-    }
-
-    await updatePackageJson(projectPath, projectName, latestVersion);
-
-    console.log("✅ Project created successfully!\n");
-    console.log("Next steps:");
-    console.log(`  cd ${projectName}`);
-    console.log("  npm install");
-
-    if (template === "auth") {
-      console.log("  npm run db:generate");
-      console.log("  npm run db:push");
-      console.log("  npm run db:seed");
-    }
-
-    console.log("  npm run dev");
-
-    const port = template === "auth" ? "4000" : "6969";
-    console.log(`\n🌐 Your app will be running at http://localhost:${port}\n`);
-  } finally {
-    rl.close();
-  }
-}
-
-async function updatePackageJson(
-  projectPath: string,
-  projectName: string,
-  latestVersion: string
-) {
-  const packageJsonPath = join(projectPath, "package.json");
-  const packageJson = JSON.parse(await readFile(packageJsonPath, "utf8"));
-
-  packageJson.name = projectName;
-
-  if (packageJson.dependencies && packageJson.dependencies["react-serve-js"]) {
-    packageJson.dependencies["react-serve-js"] = `^${latestVersion}`;
+export async function createJungleApp(projectName?: string) {
+  if (!projectName) {
+    throw new Error("Project name is required.");
   }
 
-  await writeFile(packageJsonPath, JSON.stringify(packageJson, null, 2));
+  const projectPath = resolve(process.cwd(), projectName);
+  await mkdir(join(projectPath, "api"), { recursive: true });
+  await mkdir(join(projectPath, "src"), { recursive: true });
+
+  const pkgJson = {
+    name: projectName,
+    version: "0.1.0",
+    main: "src/app.tsx",
+    scripts: {
+      dev: "tsc --watch",
+      start: "node dist/app.js",
+    },
+    dependencies: {
+      "jungle-jsx": "^0.1.0",
+    },
+    devDependencies: {
+      typescript: "^5.0.0",
+    },
+  };
+  await writeFile(
+    join(projectPath, "package.json"),
+    JSON.stringify(pkgJson, null, 2)
+  );
+
+  const indexContent = `import { GET, Response } from "jungle-jsx";
+export default function RootRoute() {
+  return <GET>{() => <Response status={200}>{{ message: "Welcome!" }}</Response>}</GET>;
+}
+`;
+  const usersContent = `import { GET, POST, Response } from "jungle-jsx";
+import { AuthMarker, RateLimitMarker } from "jungle-jsx";
+
+export default function UsersRoute() {
+  return (
+    <AuthMarker>
+      <RateLimitMarker limit={5}>
+        <GET>{({ params }) => <Response>{{ userId: params.id }}</Response>}</GET>
+        <POST>{({ body }) => <Response status={201}>{{ createdUser: body }}</Response>}</POST>
+      </RateLimitMarker>
+    </AuthMarker>
+  );
+}
+`;
+
+  await writeFile(join(projectPath, "api/index.tsx"), indexContent);
+  await writeFile(join(projectPath, "api/users/[id].tsx"), usersContent);
+
+  const appContent = `import { App } from "jungle-jsx";
+export default function MyApp() { return <App port={5000} />; }
+`;
+  await writeFile(join(projectPath, "src/app.tsx"), appContent);
+
+  console.log(`✅ Project "${projectName}" created!`);
+  console.log(`Run: cd ${projectName} && npm install && npm start`);
 }

@@ -1,18 +1,12 @@
 import React from "react";
 import { discoverRoutes } from "./file-discovery";
-import { MethodMarker, ResponseMarker } from "../components/http-methods";
+import { ResponseMarker } from "../components/http-methods";
 import {
   PipelineMarker,
   AuthMarker,
   RateLimitMarker,
   JSONBodyMarker,
 } from "../components/pipelines";
-
-export type RegisteredRoute = {
-  method: string;
-  path: string;
-  handler: (ctx: any) => Promise<any>;
-};
 
 function isMethod(node: any) {
   return node?.type?.isRouteMethod === true;
@@ -63,9 +57,9 @@ function walk(node: any, middleware: any[], out: any[]) {
   );
 }
 
-export async function buildRoutes(): Promise<RegisteredRoute[]> {
+export async function buildRoutes() {
   const discovered = discoverRoutes();
-  const routes: RegisteredRoute[] = [];
+  const routes = [];
 
   for (const d of discovered) {
     const mod = require(d.file);
