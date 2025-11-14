@@ -1,9 +1,9 @@
 {
-  "name": "create-react-serve",
+  "name": "create-jungle-app",
   "version": "0.2.1",
-  "description": "CLI tool for bootstrapping new ReactServe applications",
+  "description": "CLI tool for bootstrapping new JungleJSX applications",
   "bin": {
-    "create-react-serve": "dist/cli.js"
+    "create-jungle-app": "dist/cli.js"
   },
   "files": [
     "dist",

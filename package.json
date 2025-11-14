@@ -1,5 +1,5 @@
 {
-  "name": "junglejsx",
+  "name": "jungle-jsx",
   "version": "1.0.0",
   "description": "React-style backend framework for building APIs with JSX",
   "private": true,
@@ -8,10 +8,8 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace=packages/react-serve-js --workspace=packages/create-react-serve",
-    "dev": "npm run dev --workspace=examples/basic",
-    "publish": "npm run build && npm publish --workspaces --exclude=react-serve-basic-example",
-    "test": "npm run test --workspaces"
+    "build": "npm run build --workspace=packages/jungle-jsx --workspace=packages/create-react-serve",
+    "dev": "npm run dev --workspace=packages/jungle-jsx"
   },
   "author": "Essinn",
   "license": "MIT",

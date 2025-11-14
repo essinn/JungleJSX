@@ -1,5 +1,5 @@
 {
-  "name": "react-serve-js",
+  "name": "jungle-jsx",
   "version": "0.6.0",
   "description": "React-style backend framework for building APIs with JSX",
   "main": "dist/index.js",
