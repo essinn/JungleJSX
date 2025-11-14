@@ -1,6 +1,6 @@
 {
   "name": "jungle-jsx",
-  "version": "0.6.0",
+  "version": "1.0.0",
   "description": "React-style backend framework for building APIs with JSX",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,24 +19,24 @@
     "framework",
     "jsx",
     "api",
-    "express",
     "typescript",
-    "cors"
+    "cors",
+    "express"
   ],
   "author": "",
   "license": "MIT",
   "peerDependencies": {
-    "react": "^19.2.0"
-  },
-  "dependencies": {
-    "@types/cors": "^2.8.19",
-    "@types/node": "^24.10.1",
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
+    "react": "^19.2.0",
     "react-dom": "^19.2.0"
   },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.0",
+    "@types/node": "^24.10.1",
     "@types/react": "^19.2.5",
     "typescript": "^5.9.3"
   }
