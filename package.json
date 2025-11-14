@@ -8,8 +8,7 @@
     "examples/*"
   ],
   "scripts": {
-    "build": "npm run build --workspace=packages/jungle-jsx --workspace=packages/create-react-serve",
-    "dev": "npm run dev --workspace=packages/jungle-jsx"
+    "build": "npm run build --workspace=packages/jungle-jsx --workspace=packages/create-jungle-app"
   },
   "author": "Essinn",
   "license": "MIT",
