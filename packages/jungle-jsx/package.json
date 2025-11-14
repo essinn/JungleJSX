@@ -26,16 +26,18 @@
   "author": "",
   "license": "MIT",
   "peerDependencies": {
-    "react": "^18.0.0 || ^19.0.0"
+    "react": "^19.2.0"
   },
   "dependencies": {
     "@types/cors": "^2.8.19",
+    "@types/node": "^24.10.1",
     "cors": "^2.8.5",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@types/express": "^5.0.0",
-    "@types/react": "^19.1.10",
-    "typescript": "^5.0.0"
+    "@types/react": "^19.2.5",
+    "typescript": "^5.9.3"
   }
 }
