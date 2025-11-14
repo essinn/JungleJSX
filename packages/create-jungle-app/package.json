@@ -1,6 +1,6 @@
 {
   "name": "create-jungle-app",
-  "version": "0.2.1",
+  "version": "1.0.0",
   "description": "CLI tool for bootstrapping new JungleJSX applications",
   "bin": {
     "create-jungle-app": "dist/cli.js"

@@ -19,12 +19,13 @@ export async function createJungleApp(projectName?: string) {
       start: "node dist/app.js",
     },
     dependencies: {
-      "jungle-jsx": "^0.1.0",
+      "jungle-jsx": "^1.0.0",
     },
     devDependencies: {
       typescript: "^5.0.0",
     },
   };
+
   await writeFile(
     join(projectPath, "package.json"),
     JSON.stringify(pkgJson, null, 2)
